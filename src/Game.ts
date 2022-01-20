@@ -1,23 +1,14 @@
-import { Board } from "./Board";
-import { Symbol } from "./Tile";
+import {PlayableBoard} from "./PlayableBoard";
+import {Symbol} from "./Tile";
+import {Board} from "./Board";
 
 export class Game {
   private lastSymbol: Symbol = Symbol.EMPTY;
-  private board: Board = new Board();
+  private board: PlayableBoard = new PlayableBoard();
+  private getNextSymbol = (lastSymbol: Symbol) => lastSymbol === Symbol.X ? Symbol.O : Symbol.X
 
-  private isFirstMove = (lastSymbol: Symbol) => lastSymbol === Symbol.EMPTY;
-
-  public play(symbolToPlay: string, row: number, column: number): void {
-    const symbol = (<any>Symbol)[symbolToPlay];
-    if (this.isFirstMove(this.lastSymbol)) {
-      if (symbol === Symbol.O) {
-        throw new Error("Invalid first player");
-      }
-    }
-
-    if (symbol === this.lastSymbol) {
-      throw new Error("Invalid next player");
-    }
+  public play(row: number, column: number): void {
+    const symbol = this.getNextSymbol(this.lastSymbol)
 
     if (this.board.isTileNotEmpty(row, column)) {
       throw new Error("Invalid position");
@@ -40,10 +31,14 @@ export class Game {
 
   public winner(): string {
     return (
-      this.filledRowSameSymbol(0) ||
-      this.filledRowSameSymbol(1) ||
-      this.filledRowSameSymbol(2) ||
-      " "
+        this.filledRowSameSymbol(0) ||
+        this.filledRowSameSymbol(1) ||
+        this.filledRowSameSymbol(2) ||
+        " "
     );
+  }
+
+  public getReadOnlyBoard(): Board {
+    return this.board as Board
   }
 }
